@@ -4,9 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="dark">
-<meta name="theme-color" content="#100f0d">
+<meta name="theme-color" content="#111111">
 <meta name="description" content="Selected engineering projects: market-making and market-data systems, an iOS travel companion, and an agent-orchestration architecture study.">
 <title>Randall Montes — Selected Projects</title>
+<!-- Declares "no favicon" inline. Without it the browser auto-requests
+     /favicon.ico and logs a 404, which is the only thing that ever appeared
+     in this page's console. Not an external request: the URL is a data: URI. -->
+<link rel="icon" href="data:,">
 
 <!--
   ============================================================================
@@ -22,443 +26,329 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; }
 
+  /* ------------------------------------------------------------- palette
+     Monochrome by intent: there is no hue anywhere in the interface. Every
+     value below is a neutral grey, so hierarchy has to be carried by size,
+     weight, position and rule-work instead of by colour.
+
+     Measured WCAG contrast against --bg (#111111, relative luminance
+     0.005605):
+       --fg   #e8e6e3  15.16:1
+       --hi   #ffffff  18.88:1
+       --fg2  #9a9691   6.42:1   (and 6.10:1 on --panel #171717)
+     --fg2 is the only sub-15px role, and it clears AA for body text on both
+     surfaces it is ever used on.                                          */
+
   :root {
-    --bg:        #100f0d;
-    --bg-soft:   #161512;
-    --line-1:    #2a2721;
-    --line-2:    #201d19;
-    --fg:        #ece8e0;
-    --fg-2:      #a7a196;
-    /* Lifted from #767068, which was 3.73:1 on the card background — under AA
-       for the sub-14px roles that use it (tags, captions, notes, eyebrows). */
-    --fg-3:      #8b8479;
-    --accent:    #d8a657;
-    --accent-dim:#8a6d38;
+    --bg:    #111111;
+    --panel: #171717;
+    --fg:    #e8e6e3;
+    --fg2:   #9a9691;
+    --hi:    #ffffff;
+    --rule:  #2a2a2a;
 
-    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
-    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    --mono: ui-monospace, "Cascadia Mono", "Segoe UI Mono", "SF Mono", Menlo, Consolas, monospace;
 
-    --pad: clamp(20px, 5vw, 40px);
-    --maxw: 860px;
+    --pad:    clamp(20px, 5vw, 40px);
+    --maxw:   920px;
+    --gutter: clamp(18px, 3vw, 28px);
   }
 
   html { -webkit-text-size-adjust: 100%; }
 
+  /* Monospace needs air: 1.66 body leading, and every measure is capped
+     around 68ch so no line ever runs long enough to lose the return sweep. */
   body {
     margin: 0;
     background: var(--bg);
     color: var(--fg);
-    font-family: var(--sans);
-    font-size: 16px;
-    line-height: 1.6;
-    letter-spacing: 0.005em;
+    font-family: var(--mono);
+    font-size: 15.5px;
+    line-height: 1.66;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    overflow-x: hidden;
   }
 
-  /* Soft warm wash at the top; purely decorative, no motion. */
-  body::before {
-    content: "";
-    position: fixed;
-    inset: 0 0 auto 0;
-    height: 460px;
-    background:
-      radial-gradient(90% 100% at 50% 0%, rgba(216,166,87,0.055), rgba(216,166,87,0) 70%);
-    pointer-events: none;
-    z-index: 0;
-  }
+  /* No `overflow-x: hidden` anywhere. Hiding overflow hides the bug; the
+     layout has to actually fit, and it is verified at 1280 / 390 / 320. */
 
   .wrap {
-    position: relative;
-    z-index: 1;
     max-width: var(--maxw);
     margin: 0 auto;
     padding: 0 var(--pad);
   }
 
-  a { color: inherit; }
-
-  /* ---------------------------------------------------------------- hero */
-
-  header.hero {
-    padding: clamp(64px, 14vw, 132px) 0 clamp(20px, 3.5vw, 28px);
+  /* Links carry an underline, never a colour. Hover/focus inverts to a solid
+     block — the one interaction affordance on the page, and it works in a
+     monochrome palette without inventing an accent. */
+  a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+    text-decoration-color: var(--fg2);
   }
 
-  h1 {
-    margin: 0;
-    font-size: clamp(2.35rem, 8.5vw, 3.5rem);
-    line-height: 1.02;
-    letter-spacing: -0.028em;
-    font-weight: 600;
-  }
+  /* Anchors sitting inside a secondary-grey run step back up to --fg so they
+     read as links. Wrapped in :where() so the rule contributes zero
+     specificity: a plain `.hero-meta a` ties with `a:hover` at (0,1,1) and,
+     being later in the sheet, silently won — which left the inverted hover
+     state painting --fg text on a --fg block. Caught by measuring the forced
+     :hover computed style (it came back 1.00:1). */
+  :where(.hero-meta, .proj-note, footer) a { color: var(--fg); }
 
-  .hero-meta {
-    margin: 30px 0 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px 22px;
-    align-items: center;
-    font-size: 14.5px;
-  }
-
-  .ghlink {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--fg-2);
+  a:hover, a:focus-visible {
+    background: var(--fg);
+    color: var(--bg);
     text-decoration: none;
-    padding: 7px 13px 7px 11px;
-    border: 1px solid var(--line-1);
-    border-radius: 999px;
-    transition: border-color .18s ease, color .18s ease, background-color .18s ease;
-  }
-  .ghlink svg { width: 16px; height: 16px; flex: none; }
-  .ghlink:hover, .ghlink:focus-visible {
-    color: var(--fg);
-    border-color: var(--accent-dim);
-    background: rgba(216,166,87,0.05);
   }
 
-  /* ------------------------------------------------------------ sections */
-
-  section { padding: clamp(38px, 7vw, 60px) 0; }
-
-  .sec-head {
-    display: flex;
-    align-items: baseline;
-    gap: 16px;
-    margin: 0 0 clamp(24px, 4vw, 34px);
-  }
-
-  .sec-head h2 {
-    margin: 0;
-    font-family: var(--mono);
-    font-size: 11.5px;
-    font-weight: 500;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--fg-3);
-    white-space: nowrap;
-  }
-
-  .sec-head .rule {
-    flex: 1;
-    height: 1px;
-    background: var(--line-1);
-  }
-
-  /* --------------------------------------------------------------- cards */
-
-  .projects { display: grid; gap: 14px; }
-
-  .card {
-    position: relative;
-    border: 1px solid var(--line-2);
-    border-radius: 14px;
-    padding: clamp(22px, 4.2vw, 30px);
-    background: linear-gradient(180deg, rgba(255,247,232,0.022), rgba(255,247,232,0.006));
-    transition: border-color .2s ease, background-color .2s ease, transform .2s ease;
-  }
-
-  .card:hover, .card:focus-within {
-    border-color: var(--accent-dim);
-    background: linear-gradient(180deg, rgba(255,247,232,0.05), rgba(255,247,232,0.012));
-  }
-
-  .card-top {
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-  }
-
-  /* Status chip, right-aligned in the card header. This replaces the old
-     01–04 counters: the four projects are parallel, not an ordered sequence,
-     so the numbers encoded nothing. Status is true and answers the first
-     question a skimming reader has — is this shipped, or is it a study? */
-  .status {
-    margin-left: auto;
-    flex: none;
-    font-family: var(--mono);
-    font-size: 10.5px;
-    line-height: 1;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    color: var(--accent);
-    opacity: .78;
-    padding-top: 9px;
-    white-space: nowrap;
-  }
-
-  .card h3 {
-    margin: 0;
-    font-size: clamp(1.16rem, 3.4vw, 1.34rem);
-    font-weight: 600;
-    letter-spacing: -0.015em;
-    line-height: 1.3;
-  }
-
-  .card h3 a {
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    border-radius: 4px;
-  }
-
-  /* Stretched link: the whole card is clickable, but the markup stays valid
-     (no nested anchors). Secondary links sit above it via z-index. */
-  .card h3 a::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: 14px;
-  }
-
-  .card h3 a .arrow {
-    width: 13px; height: 13px;
-    flex: none;
-    color: var(--fg-3);
-    transition: transform .2s ease, color .2s ease;
-  }
-  .card:hover h3 a .arrow { transform: translate(2px, -2px); color: var(--accent); }
-
-  .tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px 7px;
-    margin: 12px 0 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .tags li {
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: .03em;
-    color: var(--fg-3);
-    border: 1px solid var(--line-1);
-    border-radius: 5px;
-    padding: 3px 8px;
-    white-space: nowrap;
-  }
-
-  .card p {
-    margin: 15px 0 0;
-    color: var(--fg-2);
-    font-size: 15.2px;
-    line-height: 1.66;
-    max-width: 62ch;
-    text-wrap: pretty;
-  }
-
-  .card p strong { color: var(--fg); font-weight: 500; }
-
-  /* Each project carries one image of the thing itself — a diagram of the
-     strategy, the real map output, the live dashboard. The card is an
-     overview: one image, one short paragraph, then the link. */
-  .card-main {
-    display: grid;
-    grid-template-columns: minmax(0, 296px) minmax(0, 1fr);
-    gap: clamp(18px, 3.2vw, 28px);
-    align-items: start;
-    margin-top: 18px;
-  }
-
-  .card-media {
-    margin: 0;
-    border: 1px solid var(--line-1);
-    border-radius: 10px;
-    overflow: hidden;
-    background: var(--bg-soft);
-  }
-
-  /* `pointer-events: none` is load-bearing, not cosmetic: the `filter` below
-     creates a stacking context, which paints the image above the card's
-     stretched-link ::after and kills the click target underneath it. */
-  .card-media img,
-  .card-media svg { display: block; width: 100%; height: auto; pointer-events: none; }
-
-  /* The map is a real OSM render, so it is the one light rectangle on a very
-     dark page. Knocked back just enough that it sits in the page instead of
-     pulling the eye ahead of the headings. */
-  .card-media img.lighten-down { filter: brightness(.58) saturate(.72) contrast(1.04); }
-
-  .card-media figcaption {
-    padding: 8px 11px 9px;
-    border-top: 1px solid var(--line-2);
-    font-family: var(--mono);
-    font-size: 10.5px;
-    letter-spacing: .04em;
-    text-transform: uppercase;
-    color: var(--fg-3);
-  }
-
-  /* Inside the two-column card the text column sets its own measure. */
-  .card-main .card-body > p:first-child { margin-top: 0; }
-
-  /* Two agents, two hosts — the pair IS the architecture, so the figure is
-     the two of them and the link between, not a screenshot. */
-  .agents {
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    gap: 18px;
-    padding: 26px 12px 22px;
-  }
-
-  .agents figure, .agent { margin: 0; text-align: center; }
-
-  .agent img {
-    display: block;
-    width: 92px;
-    height: 92px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 1px solid var(--line-1);
-    background: #0c0b0a;
-  }
-
-  .agent b {
-    display: block;
-    margin-top: 9px;
-    font-family: var(--mono);
-    font-weight: 400;
-    font-size: 10px;
-    letter-spacing: .09em;
-    text-transform: uppercase;
-    color: var(--fg-3);
-  }
-
-  /* This link is the whole idea of the figure, so it has to actually read —
-     a 1px hairline disappeared at real size. */
-  .agent-link {
-    flex: none;
-    width: 34px;
-    height: 2px;
-    border-radius: 2px;
-    margin-top: 45px;
-    background: linear-gradient(90deg, var(--accent-dim), var(--accent), var(--accent-dim));
-    opacity: .85;
-  }
-
-  /* Stack early. The media column is a fixed 296px, so between the old 660px
-     breakpoint and ~800px the text column fell to under 30 characters a line —
-     nothing overflowed, it just read badly. */
-  /* Stacked, the figure is capped near its own pixel width so it never has to
-     be upscaled on a 2x screen, and centred so the leftover column reads as
-     margin rather than as a gap someone forgot to fill. */
-  @media (max-width: 820px) {
-    .card-main { grid-template-columns: 1fr; gap: 16px; }
-    /* width:100% keeps all four figures the same width — `margin-inline:auto`
-       alone cancels grid stretch and each one falls back to fit-content, which
-       left their edges stepping in and out card to card. */
-    .card-media { width: 100%; max-width: 380px; margin-inline: auto; }
-  }
-
-  /* Below ~344px the fixed 92px avatars + connector cannot shrink and push the
-     card past the viewport. */
-  @media (max-width: 400px) {
-    .agents { gap: 12px; padding: 22px 10px 18px; }
-    .agent img { width: 72px; height: 72px; }
-    .agent-link { width: 26px; margin-top: 35px; }
-  }
-
-  /* Specificity must beat `.card p` (0,1,1), hence the element qualifier. */
-  .card p.card-foot {
-    position: relative;
-    z-index: 1;
-    margin: 18px 0 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px 18px;
-    align-items: baseline;
-    font-size: 13.5px;
-    line-height: 1.55;
-    color: var(--fg-3);
-    max-width: 66ch;
-  }
-
-  .card-foot a {
-    color: var(--accent);
-    text-decoration: none;
-    border-bottom: 1px solid rgba(216,166,87,0.28);
-    padding-bottom: 1px;
-    transition: border-color .18s ease;
-  }
-  .card-foot a:hover, .card-foot a:focus-visible { border-bottom-color: var(--accent); }
-
-  .card-foot .note { color: var(--fg-3); font-size: 12.5px; }
-
-  /* -------------------------------------------------------------- footer */
-
-  footer {
-    border-top: 1px solid var(--line-2);
-    margin-top: clamp(30px, 6vw, 50px);
-    padding: 34px 0 56px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 14px 24px;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 13.5px;
-    color: var(--fg-3);
-  }
-
-  footer a { color: var(--fg-2); text-decoration: none; }
-  footer a:hover, footer a:focus-visible { color: var(--accent); }
-
-  .footer-links { display: flex; flex-wrap: wrap; gap: 10px 20px; align-items: center; }
-
-  /* ------------------------------------------------------ a11y + motion */
-
-  :focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 3px;
-  }
+  :focus-visible { outline: 2px solid var(--hi); outline-offset: 2px; }
 
   .skip {
     position: absolute;
     left: -9999px;
     top: 0;
-    background: var(--bg-soft);
-    color: var(--fg);
-    padding: 10px 16px;
-    border-radius: 8px;
     z-index: 10;
+    background: var(--fg);
+    color: var(--bg);
+    padding: 9px 14px;
+    text-decoration: none;
   }
-  .skip:focus { left: var(--pad); top: 12px; }
+  .skip:focus { left: var(--pad); top: 10px; }
 
-  /* Reveal-on-scroll. The hiding class is applied by JS, so with JS disabled
-     (or if the observer never fires) everything stays visible by default. */
-  .js-reveal {
-    opacity: 0;
-    transform: translateY(10px);
-    transition: opacity .5s ease, transform .5s ease;
-  }
-  .js-reveal.in { opacity: 1; transform: none; }
+  /* ---------------------------------------------------------------- hero */
 
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-      animation-duration: .001ms !important;
-      transition-duration: .001ms !important;
-    }
-    .js-reveal { opacity: 1; transform: none; }
-  }
+  header.hero { padding: clamp(56px, 10vw, 92px) 0 clamp(34px, 6vw, 56px); }
 
-  /* Print / print-to-PDF must never capture a mid-reveal (or unrevealed)
-     element — the observer does not run in a print rendering. */
-  @media print {
-    .js-reveal { opacity: 1 !important; transform: none !important; }
+  h1 {
+    margin: 0;
+    font-size: clamp(1.6rem, 7vw, 2.4rem);
+    line-height: 1.15;
+    font-weight: 500;
+    color: var(--hi);
   }
 
-  /* ------------------------------------------------------------- mobile */
+  .hero-meta {
+    margin: clamp(14px, 2.5vw, 20px) 0 0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--fg2);
+  }
+
+  /* ------------------------------------------------------------- section
+     Numbered spec-sheet heading, sentence-case, no tracking, no transform.
+     The rule under it is the same 1px hairline that separates the entries,
+     so the heading reads as the first row of the same table.              */
+
+  .sec-head {
+    margin: 0 0 clamp(20px, 3.5vw, 28px);
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--rule);
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--fg);
+  }
+
+  /* ------------------------------------------------------------- entries
+     Hairline rules, not cards. Nothing is boxed, nothing is chipped, and
+     every entry starts on the same left edge as the heading above it.     */
+
+  .proj {
+    position: relative;
+    border-top: 1px solid var(--rule);
+    padding: clamp(24px, 4vw, 34px) 0;
+  }
+  .proj:first-child { border-top: 0; padding-top: 0; }
+
+  .proj-name {
+    margin: 0;
+    font-size: 1.18rem;
+    font-weight: 500;
+    line-height: 1.35;
+  }
+
+  /* Stretched link: the whole entry is the click target, but the markup
+     stays valid (no nested anchors). Secondary links opt back out below. */
+  .proj-name a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+
+  /* Status is plain metadata on one line with the stack, not a badge in a
+     corner. Same type size and colour as every other secondary line. */
+  .proj-meta {
+    margin: 9px 0 0;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--fg2);
+    max-width: 68ch;
+  }
+
+  .proj-body {
+    display: grid;
+    grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
+    gap: var(--gutter);
+    align-items: start;
+    margin-top: clamp(16px, 2.6vw, 22px);
+  }
+
+  .proj-text > p { margin: 0; max-width: 68ch; line-height: 1.68; text-wrap: pretty; }
+  .proj-text > p + p { margin-top: 14px; }
+
+  .proj-note {
+    padding-top: 13px;
+    border-top: 1px solid var(--rule);
+    font-size: 13px;
+    line-height: 1.62;
+    color: var(--fg2);
+    max-width: 72ch;
+  }
+  .proj-text > p.proj-note { margin-top: 16px; }
+
+  /* Only the anchors inside the note lift above the stretched link, not the
+     whole paragraph — so the note's own text still passes clicks through to
+     the entry, and just the real links win. */
+  .proj-note a { position: relative; z-index: 1; }
+
+  /* --------------------------------------------------------------- plates
+     One image of the thing itself per entry, in a hairline frame with a
+     caption rule. Square corners; the frame is the only chrome.          */
+
+  .fig {
+    margin: 0;
+    border: 1px solid var(--rule);
+    background: var(--panel);
+  }
+
+  /* `pointer-events: none` is load-bearing, not cosmetic: the `filter` on the
+     map below creates a stacking context, which paints the image above the
+     entry's stretched-link ::after and kills the click target underneath. */
+  .fig img,
+  .fig svg { display: block; width: 100%; height: auto; pointer-events: none; }
+
+  /* The map is a real OSM render — the one near-white rectangle on a very
+     dark page. Knocked back so it sits in the page rather than pulling the
+     eye ahead of the headings; hues are only muted, not removed, because the
+     alt text describes the blue and red markers. */
+  .fig img.knock { filter: brightness(.72) saturate(.5) contrast(1.05); }
+
+  figcaption {
+    border-top: 1px solid var(--rule);
+    padding: 8px 10px 9px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--fg2);
+  }
+
+  /* Two agents, two hosts — the pair IS the architecture, so the plate is the
+     two of them and the link between, not a screenshot. Explicit 3-column grid
+     with every row placed by hand, so the connector lands on the images' centre
+     line at every width and both columns can shrink without the row ever
+     overflowing. Rows: 1 avatars, 2 names, 3 drop connector, 4 vault, 5 label. */
+  /* Column and gap budget: the plate is 300px wide in the two-column layout,
+     so 96 + 16 + 36 + 16 + 96 = 260 has to clear 300 − 2px border − 28px
+     padding = 270. It does, with 10px to spare, which is why the avatars
+     render at their full 96px instead of being shrunk to ~93 by the grid. */
+  .agents {
+    display: grid;
+    grid-template-columns: minmax(0, 96px) minmax(18px, 36px) minmax(0, 96px);
+    justify-content: center;
+    gap: 9px clamp(10px, 3.5vw, 16px);
+    padding: clamp(18px, 4vw, 26px) clamp(10px, 3vw, 14px);
+  }
+
+  .agents img {
+    grid-row: 1;
+    aspect-ratio: 1 / 1;
+    object-fit: contain;
+    border: 1px solid var(--rule);
+    background: var(--bg);
+  }
+  .agents img.a1 { grid-column: 1; }
+  .agents img.a2 { grid-column: 3; }
+
+  /* A 1px rule at #9a9691 reads at real size; the same hairline at --rule
+     disappeared, and this link is the whole point of the plate. */
+  .agents-link {
+    grid-row: 1;
+    grid-column: 2;
+    align-self: center;
+    width: 100%;
+    height: 1px;
+    background: var(--fg2);
+  }
+
+  .agent-name {
+    grid-row: 2;
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--fg2);
+    text-align: center;
+  }
+  .agent-name.n1 { grid-column: 1; }
+  .agent-name.n2 { grid-column: 3; }
+
+  /* The vault is not a third agent, so it is not a third peer column: it is the
+     shared long-term store both hosts write to, so it hangs below the pair on
+     the same centre line, joined by the same 1px --fg2 connector idiom, and
+     spans the full track width.
+
+     Three-across was measured and rejected, not assumed. Four tracks plus
+     three gaps inside the plate's real inner width (270px at 1280, 258px at
+     320) leaves about 68px a column, but the 12px labels measure 72.6px
+     ("Coordinator") and 79.2px ("Shared vault") — single unbreakable words
+     that would spill out of their own track at every width.
+
+     The file on disk is 300x300 and is NEVER upscaled: it renders at the track
+     total (260px at 1280, 255px at 390, 250px at 320) and is capped at 300px so
+     a wider plate can never stretch it. No `filter` here on purpose — the
+     capture is already grey-on-near-black, and a filter would add another
+     stacking context over the entry's stretched link for no visual gain. */
+  .vault-link {
+    grid-row: 3;
+    grid-column: 2;
+    justify-self: center;
+    width: 1px;
+    height: 14px;
+    background: var(--fg2);
+  }
+  .agents img.vault {
+    grid-row: 4;
+    grid-column: 1 / -1;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+  .agent-name.n3 { grid-row: 5; grid-column: 1 / -1; }
+
+  /* Stack early: the plate column is a fixed 300px, so between the phone
+     breakpoint and ~820px the text column falls under 30 characters a line.
+     Stacked, the plate is capped near its own pixel width so it is never
+     upscaled, and both edges stay flush with the text column's left rail. */
+  @media (max-width: 820px) {
+    .proj-body { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+    .fig { width: 100%; max-width: 380px; }
+  }
+
+  /* -------------------------------------------------------------- footer */
+
+  footer {
+    border-top: 1px solid var(--rule);
+    margin-top: clamp(28px, 5vw, 44px);
+    padding: 26px 0 clamp(40px, 7vw, 60px);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 24px;
+    align-items: baseline;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--fg2);
+  }
+  footer p { margin: 0; }
 
   @media (max-width: 560px) {
-    body { font-size: 15.5px; }
-    .card-top { gap: 11px; }
-    .status { padding-top: 7px; font-size: 10px; }
-    .card p { font-size: 14.8px; }
     footer { flex-direction: column; align-items: flex-start; }
   }
 </style>
@@ -472,203 +362,147 @@
   <header class="hero">
     <h1>Randall Montes</h1>
     <p class="hero-meta">
-      <a class="ghlink" href="https://github.com/atlasyoung29" target="_blank" rel="noopener noreferrer">
-        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.42 7.42 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
-        github.com/atlasyoung29
-      </a>
+      <a href="https://github.com/atlasyoung29" target="_blank" rel="noopener noreferrer">github.com/atlasyoung29</a>
     </p>
   </header>
 
   <main>
 
     <section id="projects">
-      <div class="sec-head">
-        <h2>Projects</h2><span class="rule"></span>
-      </div>
+      <h2 class="sec-head">01 — projects</h2>
 
       <div class="projects">
 
         <!-- ------------------------------------------- agent-orchestration -->
-        <article class="card">
-          <div class="card-top">
-            <div>
-              <h3>
-                <a href="https://github.com/atlasyoung29/agent-orchestration" target="_blank" rel="noopener noreferrer">
-                  agent-orchestration
-                  <svg class="arrow" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9 9 3M4.2 3H9v4.8"/></svg>
-                </a>
-              </h3>
-              <ul class="tags">
-                <li>Architecture write-up</li><li>No code</li>
-              </ul>
-            </div>
-            <span class="status">Write-up</span>
-          </div>
-          <div class="card-main">
-            <figure class="card-media">
+        <article class="proj">
+          <h3 class="proj-name">
+            <a href="https://github.com/atlasyoung29/agent-orchestration" target="_blank" rel="noopener noreferrer">agent-orchestration</a>
+          </h3>
+          <p class="proj-meta">Architecture write-up · No code</p>
+          <div class="proj-body">
+            <figure class="fig">
               <div class="agents">
-                <div class="agent">
-                  <img src="assets/agent-jiminy.png" width="220" height="220" loading="lazy" decoding="async" alt="Avatar of the coordinator agent.">
-                  <b>Coordinator</b>
-                </div>
-                <span class="agent-link" aria-hidden="true"></span>
-                <div class="agent">
-                  <img src="assets/agent-ren.png" width="220" height="220" loading="lazy" decoding="async" alt="Avatar of the workhorse agent.">
-                  <b>Workhorse</b>
-                </div>
+                <img class="a1" src="assets/agent-jiminy.png" width="220" height="220" loading="lazy" decoding="async" alt="Avatar of the coordinator agent.">
+                <span class="agents-link" aria-hidden="true"></span>
+                <img class="a2" src="assets/agent-ren.png" width="220" height="220" loading="lazy" decoding="async" alt="Avatar of the workhorse agent.">
+                <span class="agent-name n1">Coordinator</span>
+                <span class="agent-name n2">Workhorse</span>
+                <span class="vault-link" aria-hidden="true"></span>
+                <img class="vault" src="assets/obsidian-graph.png" width="300" height="300" loading="lazy" decoding="async"
+                     alt="Knowledge-graph view of the shared Markdown vault: clustered notes linked parent to child.">
+                <span class="agent-name n3">Shared vault</span>
               </div>
-              <figcaption>Two agents, two hosts, one repo</figcaption>
+              <figcaption>Two agents, two hosts, one repo, one shared vault</figcaption>
             </figure>
-            <div class="card-body">
+            <div class="proj-text">
               <p>
                 Architecture study of two LLM-backed coding agents split by machine, not by topic:
                 Windows handles comms, docs and commit review; the Mac handles iOS builds and long
-                jobs. One writes, the other attacks it — <strong>neither wins by sounding
-                confident; go quote the code.</strong> Whichever claim survives verification
+                jobs. One writes, the other attacks it — neither wins by sounding
+                confident; go quote the code. Whichever claim survives verification
                 stands. Nothing is automated: a human still does the routing, which is the weak
                 point.
               </p>
-              <p class="card-foot">
-                <span class="note">Architecture and reusable patterns</span>
-              </p>
+              <p class="proj-note">Architecture and reusable patterns</p>
             </div>
           </div>
         </article>
 
         <!-- ------------------------------------------------ SpreadEater -->
-        <article class="card">
-          <div class="card-top">
-            <div>
-              <h3>
-                <a href="https://github.com/atlasyoung29/SpreadEater" target="_blank" rel="noopener noreferrer">
-                  SpreadEater
-                  <svg class="arrow" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9 9 3M4.2 3H9v4.8"/></svg>
-                </a>
-              </h3>
-              <ul class="tags">
-                <li>Rust</li><li>TypeScript</li><li>Polymarket CLOB</li><li>EIP-712</li><li>Axum</li>
-              </ul>
-            </div>
-            <span class="status">Research</span>
-          </div>
-          <div class="card-main">
-            <figure class="card-media">
-              <svg viewBox="12 0 246 196" role="img" aria-labelledby="se-flow-title" fill="none">
+        <article class="proj">
+          <h3 class="proj-name">
+            <a href="https://github.com/atlasyoung29/SpreadEater" target="_blank" rel="noopener noreferrer">SpreadEater</a>
+          </h3>
+          <p class="proj-meta">Research · Rust · TypeScript · Polymarket CLOB · EIP-712 · Axum</p>
+          <div class="proj-body">
+            <figure class="fig">
+              <svg viewBox="24 8 214 184" role="img" aria-labelledby="se-flow-title" fill="none">
                 <title id="se-flow-title">The SpreadEater loop: rank markets by reward per share, quote both sides, take a fill, then get flat by on-chain pair merge or the bid book, and repeat.</title>
                 <defs>
                   <marker id="se-arrow" viewBox="0 0 8 8" refX="6.2" refY="4" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
-                    <path d="M0.6 1 6.4 4 0.6 7Z" fill="#767068"/>
-                  </marker>
-                  <marker id="se-arrow-acc" viewBox="0 0 8 8" refX="6.2" refY="4" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
-                    <path d="M0.6 1 6.4 4 0.6 7Z" fill="#8a6d38"/>
+                    <path d="M0.6 1 6.4 4 0.6 7Z" fill="#9a9691"/>
                   </marker>
                 </defs>
-                <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" fill="#a7a196" text-anchor="middle">
-                  <rect x="58" y="10"  width="180" height="32" rx="7" fill="#161512" stroke="#2a2721"/>
-                  <text x="148" y="29.5">Rank by reward-per-share</text>
-                  <rect x="58" y="54"  width="180" height="32" rx="7" fill="#161512" stroke="#2a2721"/>
-                  <text x="148" y="73.5">Quote both sides</text>
-                  <rect x="58" y="98"  width="180" height="32" rx="7" fill="#161512" stroke="#8a6d38"/>
-                  <text x="148" y="117.5" fill="#ece8e0">Fill</text>
-                  <rect x="58" y="142" width="180" height="32" rx="7" fill="#161512" stroke="#2a2721"/>
-                  <text x="148" y="161.5">Merge or sell to get flat</text>
+                <g font-family="ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', 'SF Mono', Menlo, Consolas, monospace" font-size="9.5" fill="#9a9691" text-anchor="middle">
+                  <rect x="54" y="14"  width="178" height="30" fill="#111111" stroke="#2a2a2a"/>
+                  <text x="143" y="33">Rank by reward-per-share</text>
+                  <rect x="54" y="56"  width="178" height="30" fill="#111111" stroke="#2a2a2a"/>
+                  <text x="143" y="75">Quote both sides</text>
+                  <!-- The one inverted block on the page's only diagram: the fill is
+                       the event the whole loop exists to produce. -->
+                  <rect x="54" y="98"  width="178" height="30" fill="#e8e6e3" stroke="#e8e6e3"/>
+                  <text x="143" y="117" fill="#111111">Fill</text>
+                  <rect x="54" y="140" width="178" height="30" fill="#111111" stroke="#2a2a2a"/>
+                  <text x="143" y="159">Merge or sell to get flat</text>
                 </g>
-                <g stroke="#767068" stroke-width="1.1" marker-end="url(#se-arrow)">
-                  <path d="M148 42V50"/>
-                  <path d="M148 86V94"/>
-                  <path d="M148 130V138"/>
+                <g stroke="#9a9691" stroke-width="1" marker-end="url(#se-arrow)">
+                  <path d="M143 44V54"/>
+                  <path d="M143 86V96"/>
+                  <path d="M143 128V138"/>
                 </g>
-                <path d="M148 174V188H32V70H54" stroke="#8a6d38" stroke-width="1.1" marker-end="url(#se-arrow-acc)"/>
+                <path d="M143 170V186H30V71H52" stroke="#9a9691" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#se-arrow)"/>
               </svg>
               <figcaption>The loop, one fill at a time</figcaption>
             </figure>
-            <div class="card-body">
+            <div class="proj-text">
               <p>
                 Rust market maker for Polymarket's maker-reward program, which pays for resting
                 tight two-sided quotes on binary markets. It ranks reward-eligible markets,
                 sizes every quote to depth it can actually hedge, and exits each fill the
                 cheaper way. The README is a post-mortem: getting flat means crossing the book,
                 and the crossing costs more than the reward pays —
-                <strong>hedged is not the same as profitable.</strong>
+                hedged is not the same as profitable.
               </p>
-              <p class="card-foot">
-                <span class="note">Built with <a href="https://github.com/gabrielsalazar777" target="_blank" rel="noopener noreferrer">@gabrielsalazar777</a> · not run as a live earner</span>
-              </p>
+              <p class="proj-note">Built with <a href="https://github.com/gabrielsalazar777" target="_blank" rel="noopener noreferrer">@gabrielsalazar777</a> · not run as a live earner</p>
             </div>
           </div>
         </article>
 
         <!-- -------------------------------------------------------- Lore -->
-        <article class="card">
-          <div class="card-top">
-            <div>
-              <h3>
-                <a href="https://github.com/atlasyoung29/Lore" target="_blank" rel="noopener noreferrer">
-                  Lore
-                  <svg class="arrow" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9 9 3M4.2 3H9v4.8"/></svg>
-                </a>
-              </h3>
-              <ul class="tags">
-                <li>Swift</li><li>SwiftUI</li><li>SwiftData</li><li>MapKit</li><li>Python</li>
-              </ul>
-            </div>
-            <span class="status">Prototype</span>
-          </div>
-          <div class="card-main">
-            <figure class="card-media">
-              <img class="lighten-down" src="assets/lore-map.png" width="900" height="606" loading="lazy" decoding="async"
+        <article class="proj">
+          <h3 class="proj-name">
+            <a href="https://github.com/atlasyoung29/Lore" target="_blank" rel="noopener noreferrer">Lore</a>
+          </h3>
+          <p class="proj-meta">Prototype · Swift · SwiftUI · SwiftData · MapKit · Python</p>
+          <div class="proj-body">
+            <figure class="fig">
+              <img class="knock" src="assets/lore-map.png" width="900" height="606" loading="lazy" decoding="async"
                    alt="Street map of the West Village, New York, with a blue YOU marker at the user's position and three numbered red pins on nearby points of interest.">
               <figcaption>You + walkable pins · map data © OpenStreetMap contributors</figcaption>
             </figure>
-            <div class="card-body">
+            <div class="proj-text">
               <p>
                 iOS travel companion: it reverse-geocodes your exact spot and returns a sourced
-                debrief with walkable pins. <strong>Trusting generated output is the hard part</strong> —
+                debrief with walkable pins. Trusting generated output is the hard part —
                 every pin the model proposes is snapped onto a real POI coordinate or dropped,
                 enforced once on the backend and again in the app.
               </p>
-              <p class="card-foot">
-                <span class="note">SwiftUI app + dependency-free stdlib Python backend · typed JSON contract, so a deterministic mock swaps in · path-gated CI on both halves</span>
-              </p>
+              <p class="proj-note">SwiftUI app + dependency-free stdlib Python backend · typed JSON contract, so a deterministic mock swaps in · path-gated CI on both halves</p>
             </div>
           </div>
         </article>
 
         <!-- --------------------------------------------- PolyScanner V2 -->
-        <article class="card">
-          <div class="card-top">
-            <div>
-              <h3>
-                <a href="https://github.com/atlasyoung29/PolyScanner-V2" target="_blank" rel="noopener noreferrer">
-                  PolyScanner V2
-                  <svg class="arrow" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9 9 3M4.2 3H9v4.8"/></svg>
-                </a>
-              </h3>
-              <ul class="tags">
-                <li>Python</li><li>Flask</li><li>NumPy</li><li>SwiftUI</li>
-              </ul>
-            </div>
-            <span class="status">Live</span>
-          </div>
-          <div class="card-main">
-            <figure class="card-media">
+        <article class="proj">
+          <h3 class="proj-name">
+            <a href="https://github.com/atlasyoung29/PolyScanner-V2" target="_blank" rel="noopener noreferrer">PolyScanner V2</a>
+          </h3>
+          <p class="proj-meta">Live · Python · Flask · NumPy · SwiftUI</p>
+          <div class="proj-body">
+            <figure class="fig">
               <img src="assets/polyscanner.png" width="780" height="505" loading="lazy" decoding="async"
                    alt="Three signals from the live dashboard, sorted by z-score: a Russian presidency market sold at $178.0K with a z-score of 498.9, an Athletics game bought at $9.1K and 78.7, and a Fed rate market bought at $18.6K and 52.6.">
               <figcaption>Live scan · sorted by z-score</figcaption>
             </figure>
-            <div class="card-body">
+            <div class="proj-text">
               <p>
                 Turns Polymarket's public trade feed — unreadable by eye — into a signal. Every
                 trade is scored against a rolling baseline for <em>that</em> market and outcome,
-                so <strong>"large" is relative to the market, not a dollar cutoff</strong>, and
+                so "large" is relative to the market, not a dollar cutoff, and
                 flagged trades are grouped by wallet to surface one hand moving across several
                 markets at once.
               </p>
-              <p class="card-foot">
-                <a href="https://polyscanner-v2.onrender.com" target="_blank" rel="noopener noreferrer">Live dashboard</a>
-                <span class="note">free-tier host sleeps when idle — first load takes ~30s to wake</span>
-                <span class="note">Native SwiftUI companion app on the same public API</span>
-              </p>
+              <p class="proj-note"><a href="https://polyscanner-v2.onrender.com" target="_blank" rel="noopener noreferrer">Live dashboard</a> · free-tier host sleeps when idle — first load takes ~30s to wake · Native SwiftUI companion app on the same public API</p>
             </div>
           </div>
         </article>
@@ -679,56 +513,11 @@
   </main>
 
   <footer>
-    <span>Everything on this page links to its source.</span>
-    <span class="footer-links">
-      <a href="https://github.com/atlasyoung29" target="_blank" rel="noopener noreferrer">GitHub</a>
-    </span>
+    <p>Everything on this page links to its source.</p>
+    <p><a href="https://github.com/atlasyoung29" target="_blank" rel="noopener noreferrer">GitHub</a></p>
   </footer>
 
 </div>
-
-<script>
-(function () {
-  "use strict";
-
-  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (reduce || !("IntersectionObserver" in window)) return;
-
-  var targets = document.querySelectorAll(".card, .sec-head");
-  if (!targets.length) return;
-
-  // The hiding class is added here, not in the markup, so no-JS users never see
-  // hidden content. Anything already within (or above) the viewport at this point
-  // is never hidden at all: it is on screen at first paint, so hiding it would
-  // cause a flash on load and would let a static render — screenshot, print-to-PDF,
-  // link-preview crawler — capture the page before the reveal has run.
-  var vh = window.innerHeight || document.documentElement.clientHeight;
-  var pending = [];
-  Array.prototype.forEach.call(targets, function (el) {
-    if (el.getBoundingClientRect().top >= vh) {
-      el.classList.add("js-reveal");
-      pending.push(el);
-    }
-  });
-  if (!pending.length) return;
-
-  var io = new IntersectionObserver(function (entries) {
-    entries.forEach(function (entry) {
-      if (!entry.isIntersecting) return;
-      entry.target.classList.add("in");
-      io.unobserve(entry.target);
-    });
-  }, { rootMargin: "0px 0px -8% 0px", threshold: 0.06 });
-
-  pending.forEach(function (el) { io.observe(el); });
-
-  // Safety net: if the observer never fires, reveal everything unconditionally
-  // after ~1s so content can never be stranded off-screen.
-  window.setTimeout(function () {
-    pending.forEach(function (el) { el.classList.add("in"); });
-  }, 1000);
-})();
-</script>
 
 </body>
 </html>
