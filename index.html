@@ -198,15 +198,23 @@
   .proj-text > p { margin: 0; max-width: 68ch; line-height: 1.68; text-wrap: pretty; }
   .proj-text > p + p { margin-top: 14px; }
 
+  /* The note is separated by whitespace, not by a rule. A hairline here read at
+     exactly the same weight as the between-entry rule, so the four entries
+     scanned as eight sections and the boundary lost its meaning: a rule on this
+     page now means "next project", nothing else.
+
+     The gap is deliberately asymmetric — it has to bind the note upward to its
+     own paragraph and not float midway to the next entry's rule. Budget:
+     .proj's bottom padding is clamp(24px, 4vw, 34px), i.e. 34px at 1280 and
+     24px at 390, so the note's top gap is clamped just under both (24 / 18) and
+     stays >= the 16px it already had, so it is no more crowded than before. */
   .proj-note {
-    padding-top: 13px;
-    border-top: 1px solid var(--rule);
     font-size: 13px;
     line-height: 1.62;
     color: var(--fg2);
     max-width: 72ch;
   }
-  .proj-text > p.proj-note { margin-top: 16px; }
+  .proj-text > p.proj-note { margin-top: clamp(18px, 2.2vw, 24px); }
 
   /* Only the anchors inside the note lift above the stretched link, not the
      whole paragraph — so the note's own text still passes clicks through to
