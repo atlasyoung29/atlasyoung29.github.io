@@ -18,8 +18,10 @@
   no CDN. Open index.html directly in a browser, or serve the folder.
 
   SOURCING NOTE: every claim on this page is drawn from the linked public
-  repository's own README / language statistics as of 2026-07-25. No metrics,
-  dates, or performance figures have been added beyond what the repos state.
+  repository's own README / language statistics as of 2026-07-25, with two
+  exceptions supplied by the author: the agent-orchestration list items and
+  the per-entry "Tradeoffs" lines. No metrics, dates, or performance figures
+  have been added beyond what the repos state.
   ============================================================================
 -->
 
@@ -197,6 +199,46 @@
 
   .proj-text > p { margin: 0; max-width: 68ch; line-height: 1.68; text-wrap: pretty; }
   .proj-text > p + p { margin-top: 14px; }
+
+  /* Specifics under the paragraph, so the list has to read as a condensed
+     continuation of it and not as a second voice: the inherited --fg, one step
+     down an existing size on the scale (14px, the hero-meta size), tighter
+     leading than the 1.68 prose. Deliberately not --fg2 — at --fg2 it would
+     land at the same weight as the note underneath it and the two would scan as
+     one grey block, which is the same mistake the note's own rule avoided.
+
+     Markers are real list markers, not ::before content, so the list is still
+     announced as a list; only the marker is knocked back. Square because the
+     page has no rounded geometry anywhere else. Hanging indent (the default
+     outside position) is load-bearing on a phone, where every bullet wraps. */
+  .proj-list {
+    margin: 14px 0 0;
+    padding-left: 1.35em;
+    max-width: 68ch;
+    font-size: 14px;
+    line-height: 1.5;
+    list-style-type: square;
+  }
+  .proj-list > li + li { margin-top: 4px; }
+  .proj-list > li::marker { color: var(--fg2); }
+
+  /* One line under the list naming what the entry gives up. It has to read as
+     secondary to the bullets it follows, so the step down is in colour and
+     size (--fg2 at the note's 13px), while the inherited family and the 68ch
+     measure stay the list's — same left edge, same wrap point, so the entry
+     reads claim, specifics, cost, top to bottom.
+
+     The margin is set on `.proj-text > p.proj-tradeoff`, not on the class
+     alone: `.proj-text > p` sets `margin: 0` at (0,1,1) and outranks a bare
+     `.proj-tradeoff`, so the top gap has to be claimed at the same shape the
+     note already uses. Below it the note's own clamped margin still separates
+     the two greys, so they do not close up into one block.
+
+     The label is set off by tracking alone. A transform, a border or a second
+     grey would each turn it into a badge, and the page has none. */
+  .proj-tradeoff { font-size: 13px; color: var(--fg2); }
+  .proj-text > p.proj-tradeoff { margin-top: 12px; max-width: 68ch; }
+  .proj-tradeoff .tradeoff-label { letter-spacing: 0.06em; }
 
   /* The note is separated by whitespace, not by a rule. A hairline here read at
      exactly the same weight as the between-entry rule, so the four entries
@@ -386,7 +428,7 @@
           <h3 class="proj-name">
             <a href="https://github.com/atlasyoung29/agent-orchestration" target="_blank" rel="noopener noreferrer">agent-orchestration</a>
           </h3>
-          <p class="proj-meta">Architecture write-up · No code</p>
+          <p class="proj-meta">Architecture write-up</p>
           <div class="proj-body">
             <figure class="fig">
               <div class="agents">
@@ -396,7 +438,7 @@
                 <span class="agent-name n1">Coordinator</span>
                 <span class="agent-name n2">Workhorse</span>
                 <span class="vault-link" aria-hidden="true"></span>
-                <img class="vault" src="assets/obsidian-graph.png" width="300" height="300" loading="lazy" decoding="async"
+                <img class="vault" src="assets/obsidian-graph-v4.png" width="300" height="300" loading="lazy" decoding="async"
                      alt="Knowledge-graph view of the shared Markdown vault: clustered notes linked parent to child.">
                 <span class="agent-name n3">Shared vault</span>
               </div>
@@ -411,6 +453,12 @@
                 stands. Nothing is automated: a human still does the routing, which is the weak
                 point.
               </p>
+              <ul class="proj-list">
+                <li>Context windows are ephemeral: durable memory is a linked-Markdown Obsidian vault, read at session start.</li>
+                <li>One hub note per folder, parent-to-child links only — no sibling edges, so the graph stays navigable.</li>
+                <li>A push hook reviews each commit's diff against the docs and writes them back in sync.</li>
+              </ul>
+              <p class="proj-tradeoff"><span class="tradeoff-label">Tradeoffs</span> · Documents a working setup rather than packaging it as a framework — the patterns port, the wiring doesn't.</p>
               <p class="proj-note">Architecture and reusable patterns</p>
             </div>
           </div>
@@ -457,11 +505,18 @@
                 Rust market maker for Polymarket's maker-reward program, which pays for resting
                 tight two-sided quotes on binary markets. It ranks reward-eligible markets,
                 sizes every quote to depth it can actually hedge, and exits each fill the
-                cheaper way. The README is a post-mortem: getting flat means crossing the book,
-                and the crossing costs more than the reward pays —
-                hedged is not the same as profitable.
+                cheaper way. The README is a post-mortem. The resting legs earned their spread,
+                but the hedge leg is a taker order by construction — every fill pays a crossing,
+                and the crossing costs more than the reward program pays. That inequality is
+                structural, not a tuning problem: hedged is not the same as profitable.
               </p>
-              <p class="proj-note">Built with <a href="https://github.com/gabrielsalazar777" target="_blank" rel="noopener noreferrer">@gabrielsalazar777</a> · not run as a live earner</p>
+              <ul class="proj-list">
+                <li>Markets are ranked by reward per share before anything is quoted.</li>
+                <li>Quote size is capped at the depth it can actually hedge.</li>
+                <li>Each fill exits the cheaper way — on-chain pair merge or the bid book.</li>
+              </ul>
+              <p class="proj-tradeoff"><span class="tradeoff-label">Tradeoffs</span> · Scoped as research, not a live earner — the post-mortem is the deliverable.</p>
+              <p class="proj-note">Built with <a href="https://github.com/gabrielsalazar777" target="_blank" rel="noopener noreferrer">@gabrielsalazar777</a></p>
             </div>
           </div>
         </article>
@@ -471,7 +526,7 @@
           <h3 class="proj-name">
             <a href="https://github.com/atlasyoung29/Lore" target="_blank" rel="noopener noreferrer">Lore</a>
           </h3>
-          <p class="proj-meta">Prototype · Swift · SwiftUI · SwiftData · MapKit · Python</p>
+          <p class="proj-meta">Swift · SwiftUI · SwiftData · MapKit · Python</p>
           <div class="proj-body">
             <figure class="fig">
               <img class="knock" src="assets/lore-map.png" width="900" height="606" loading="lazy" decoding="async"
@@ -485,6 +540,12 @@
                 every pin the model proposes is snapped onto a real POI coordinate or dropped,
                 enforced once on the backend and again in the app.
               </p>
+              <ul class="proj-list">
+                <li>Pins are dropped, not approximated, when no real POI coordinate matches.</li>
+                <li>The same coordinate check runs twice — once server-side, once in the app.</li>
+                <li>Sources travel with the debrief, so a generated claim can be checked.</li>
+              </ul>
+              <p class="proj-tradeoff"><span class="tradeoff-label">Tradeoffs</span> · Held at prototype scope on purpose — the coordinate and sourcing guarantees come before feature breadth.</p>
               <p class="proj-note">SwiftUI app + dependency-free stdlib Python backend · typed JSON contract, so a deterministic mock swaps in · path-gated CI on both halves</p>
             </div>
           </div>
@@ -504,12 +565,17 @@
             </figure>
             <div class="proj-text">
               <p>
-                Turns Polymarket's public trade feed — unreadable by eye — into a signal. Every
-                trade is scored against a rolling baseline for <em>that</em> market and outcome,
-                so "large" is relative to the market, not a dollar cutoff, and
-                flagged trades are grouped by wallet to surface one hand moving across several
-                markets at once.
+                Turns Polymarket's public trade feed — unreadable by eye — into statistically
+                significant datapoints. Every trade is scored against a rolling baseline for
+                <em>that</em> market and outcome, so "large" is relative to the market, not a
+                dollar cutoff, and flagged trades are grouped by wallet to surface one hand
+                moving across several markets at once.
               </p>
+              <ul class="proj-list">
+                <li>Baselines roll forward with the feed rather than sitting at a fixed threshold.</li>
+                <li>Cards expand to position, payout, z-score, wallet and transaction hash.</li>
+                <li>Grouping by wallet turns scattered flags into one actor's activity.</li>
+              </ul>
               <p class="proj-note"><a href="https://polyscanner-v2.onrender.com" target="_blank" rel="noopener noreferrer">Live dashboard</a> · free-tier host sleeps when idle — first load takes ~30s to wake · Native SwiftUI companion app on the same public API</p>
             </div>
           </div>
