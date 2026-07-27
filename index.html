@@ -171,6 +171,25 @@
     line-height: 1.35;
   }
 
+  /* The entry number is a real span rather than a ::before counter, for the
+     same reason the list markers below are real markers: it is part of what
+     the heading says, so it should be announced with the name and not live
+     in a decorative layer.
+
+     It carries the secondary voice already on the page — .proj-note's 13px
+     at --fg2 — so it separates the entries without competing with the name
+     it labels. The fixed inline-block width holds all four names on one
+     vertical edge and keeps the number itself flush left, so the entry still
+     starts on the same left edge as the heading above it; only the name is
+     inset, which is what makes the four read as a numbered set. */
+  .proj-num {
+    display: inline-block;
+    width: 2.6ch;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--fg2);
+  }
+
   /* Stretched link: the whole entry is the click target, but the markup
      stays valid (no nested anchors). Secondary links opt back out below. */
   .proj-name a::after {
@@ -431,14 +450,14 @@
   <main>
 
     <section id="projects">
-      <h2 class="sec-head">Hobby Projects</h2>
+      <h2 class="sec-head">Hobby Projects · 4</h2>
 
       <div class="projects">
 
         <!-- ------------------------------------------- agent-orchestration -->
         <article class="proj">
           <h3 class="proj-name">
-            <a href="https://github.com/atlasyoung29/agent-orchestration" target="_blank" rel="noopener noreferrer">agent-orchestration</a>
+            <span class="proj-num">01</span><a href="https://github.com/atlasyoung29/agent-orchestration" target="_blank" rel="noopener noreferrer">agent-orchestration</a>
           </h3>
           <p class="proj-meta">Architecture write-up</p>
           <div class="proj-body">
@@ -479,7 +498,7 @@
         <!-- ------------------------------------------------ SpreadEater -->
         <article class="proj">
           <h3 class="proj-name">
-            <a href="https://github.com/atlasyoung29/SpreadEater" target="_blank" rel="noopener noreferrer">SpreadEater</a>
+            <span class="proj-num">02</span><a href="https://github.com/atlasyoung29/SpreadEater" target="_blank" rel="noopener noreferrer">SpreadEater</a>
           </h3>
           <p class="proj-meta">Research · Rust · TypeScript · Polymarket CLOB · EIP-712 · Axum</p>
           <div class="proj-body">
@@ -590,7 +609,7 @@
         <!-- -------------------------------------------------------- Lore -->
         <article class="proj">
           <h3 class="proj-name">
-            <a href="https://github.com/atlasyoung29/Lore" target="_blank" rel="noopener noreferrer">Lore</a>
+            <span class="proj-num">03</span><a href="https://github.com/atlasyoung29/Lore" target="_blank" rel="noopener noreferrer">Lore</a>
           </h3>
           <p class="proj-meta">Swift · SwiftUI · SwiftData · MapKit · Python</p>
           <div class="proj-body">
@@ -620,7 +639,7 @@
         <!-- --------------------------------------------- PolyScanner V2 -->
         <article class="proj">
           <h3 class="proj-name">
-            <a href="https://github.com/atlasyoung29/PolyScanner-V2" target="_blank" rel="noopener noreferrer">PolyScanner V2</a>
+            <span class="proj-num">04</span><a href="https://github.com/atlasyoung29/PolyScanner-V2" target="_blank" rel="noopener noreferrer">PolyScanner V2</a>
           </h3>
           <p class="proj-meta">Live · Python · Flask · NumPy · SwiftUI</p>
           <div class="proj-body">
