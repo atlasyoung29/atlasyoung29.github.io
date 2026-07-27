@@ -176,16 +176,22 @@
      the heading says, so it should be announced with the name and not live
      in a decorative layer.
 
-     It carries the secondary voice already on the page — .proj-note's 13px
-     at --fg2 — so it separates the entries without competing with the name
-     it labels. The fixed inline-block width holds all four names on one
-     vertical edge and keeps the number itself flush left, so the entry still
-     starts on the same left edge as the heading above it; only the name is
-     inset, which is what makes the four read as a numbered set. */
+     It is set at the name's own size and separated from it by colour alone:
+     --fg2 against the name's --fg. Holding the size and stepping only the
+     grey is what keeps it reading as an index rather than as a second
+     heading — at a smaller size it read as a footnote to the name instead
+     of a marker for the entry.
+
+     The width is in ch, so it tracks the font-size and the gap after the
+     digits stays proportional at any size. That fixed inline-block holds all
+     four names on one vertical edge and keeps the number itself flush left,
+     so the entry still starts on the same left edge as the heading above it;
+     only the name is inset, which is what makes the four read as a numbered
+     set. */
   .proj-num {
     display: inline-block;
-    width: 2.6ch;
-    font-size: 13px;
+    width: 2.9ch;
+    font-size: 1.18rem;
     font-weight: 400;
     color: var(--fg2);
   }
