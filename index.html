@@ -176,11 +176,14 @@
      the heading says, so it should be announced with the name and not live
      in a decorative layer.
 
-     It is set at the name's own size and separated from it by colour alone:
-     --fg2 against the name's --fg. Holding the size and stepping only the
-     grey is what keeps it reading as an index rather than as a second
-     heading — at a smaller size it read as a footnote to the name instead
-     of a marker for the entry.
+     It is deliberately larger than the name it labels — a display numeral,
+     not a prefix — and the whole of its step back is carried by colour:
+     --fg2 against the name's --fg. Size and colour pulling opposite ways is
+     what lets it be the thing you see first when scanning the page while
+     still not outranking the name when you actually read the entry.
+
+     line-height is 1 so the taller numeral does not inflate the heading's
+     own line box and push the name off the rhythm the other entries keep.
 
      The width is in ch, so it tracks the font-size and the gap after the
      digits stays proportional at any size. That fixed inline-block holds all
@@ -191,8 +194,9 @@
   .proj-num {
     display: inline-block;
     width: 2.9ch;
-    font-size: 1.18rem;
+    font-size: 1.75rem;
     font-weight: 400;
+    line-height: 1;
     color: var(--fg2);
   }
 
