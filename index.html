@@ -361,6 +361,14 @@
   .agents img.a1 { grid-column: 1; }
   .agents img.a2 { grid-column: 3; }
 
+  /* The two avatars are now the vendors' own marks, drawn as SVG in --fg so the
+     plate stays inside the page's monochrome rule instead of importing two
+     brand palettes. Both marks run edge to edge in their own viewBox, so the
+     padding is what keeps them off the 1px frame — without it they read as two
+     cropped shapes rather than two logos. The vault capture below is a raster
+     screenshot and gets none of this. */
+  .agents img.a1, .agents img.a2 { padding: 17px; }
+
   /* A 1px rule at #9a9691 reads at real size; the same hairline at --rule
      disappeared, and this link is the whole point of the plate. */
   .agents-link {
@@ -473,9 +481,9 @@
           <div class="proj-body">
             <figure class="fig">
               <div class="agents">
-                <img class="a1" src="assets/agent-jiminy.png" width="220" height="220" loading="lazy" decoding="async" alt="Avatar of Jiminy, the coordinator agent.">
+                <img class="a1" src="assets/agent-claude.svg" width="220" height="220" loading="lazy" decoding="async" alt="The Claude mark, standing for Jiminy, the coordinator agent.">
                 <span class="agents-link" aria-hidden="true"></span>
-                <img class="a2" src="assets/agent-ren.png" width="220" height="220" loading="lazy" decoding="async" alt="Avatar of Ren, the workhorse agent.">
+                <img class="a2" src="assets/agent-codex.svg" width="220" height="220" loading="lazy" decoding="async" alt="The OpenAI mark, standing for Ren, the workhorse agent running on Codex.">
                 <span class="agent-name n1">Jiminy (Claude Opus 5)</span>
                 <span class="agent-name n2">Ren (GPT-5.6 Luna)</span>
                 <span class="vault-link" aria-hidden="true"></span>
