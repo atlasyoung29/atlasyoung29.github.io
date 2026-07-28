@@ -31,7 +31,10 @@
   /* ------------------------------------------------------------- palette
      Monochrome by intent: there is no hue anywhere in the interface. Every
      value below is a neutral grey, so hierarchy has to be carried by size,
-     weight, position and rule-work instead of by colour.
+     weight, position and rule-work instead of by colour. The single exception
+     is the two vendor marks on the agent-orchestration plate, which keep their
+     own brand colours — see the note on .agents img.a1/.a2. Nothing in this
+     palette is a hue, and nothing else on the page is allowed to be.
 
      Measured WCAG contrast against --bg (#111111, relative luminance
      0.005605):
@@ -361,12 +364,16 @@
   .agents img.a1 { grid-column: 1; }
   .agents img.a2 { grid-column: 3; }
 
-  /* The two avatars are now the vendors' own marks, drawn as SVG in --fg so the
-     plate stays inside the page's monochrome rule instead of importing two
-     brand palettes. Both marks run edge to edge in their own viewBox, so the
-     padding is what keeps them off the 1px frame — without it they read as two
-     cropped shapes rather than two logos. The vault capture below is a raster
-     screenshot and gets none of this. */
+  /* The two avatars are the vendors' own marks, as SVG, in their own brand
+     colours — the one deliberate exception to the monochrome rule stated at the
+     top of this sheet. They are the only hue on the page, which is the point:
+     the plate is the architecture, and the two colours are what say at a glance
+     that these are two different vendors rather than one system drawn twice.
+     Claude keeps its own orange; the OpenAI mark is set to white because it
+     ships black, which is invisible on --bg. Both marks run edge to edge in
+     their own viewBox, so the padding is what keeps them off the 1px frame —
+     without it they read as two cropped shapes rather than two logos. The vault
+     capture below is a raster screenshot and gets none of this. */
   .agents img.a1, .agents img.a2 { padding: 17px; }
 
   /* A 1px rule at #9a9691 reads at real size; the same hairline at --rule
