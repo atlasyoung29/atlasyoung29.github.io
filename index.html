@@ -495,22 +495,23 @@
                 <span class="agent-name n2">Ren (GPT-5.6 Luna)</span>
                 <span class="vault-link" aria-hidden="true"></span>
                 <img class="vault" src="assets/obsidian-graph-v4.png" width="300" height="300" loading="lazy" decoding="async"
-                     alt="Knowledge-graph view of the shared Markdown vault: clustered notes linked parent to child.">
-                <span class="agent-name n3">Shared vault</span>
+                     alt="A map of the shared notes: clusters of notes, each linked down to the ones below it.">
+                <span class="agent-name n3">Shared notes</span>
               </div>
-              <figcaption>Two AI coding agents, two models, one repository, one shared vault</figcaption>
+              <figcaption>Two AI coding agents, two models, one repository, one shared set of notes</figcaption>
             </figure>
             <div class="proj-text">
               <p>
-                Two AI coding agents, each running on a different model, split by job rather
-                than by subject. Claude Opus 5 handles messages, documentation and reviewing
-                commits. GPT-5.6 Luna handles iOS builds and anything long-running. One writes
-                the work, the other tries to break it, and the claim that survives stands.
+                Two AI coding agents, each running on a different model, with separate jobs.
+                Claude Opus 5 handles messages, documentation and reviewing code changes.
+                GPT-5.6 Luna handles iOS builds and anything that takes a long time. One does
+                the work, the other tries to poke holes in it, and whatever holds up is what
+                stands.
               </p>
               <ul class="proj-list">
-                <li>Context windows are ephemeral: durable memory is a linked-Markdown Obsidian vault, read at session start.</li>
-                <li>One hub note per folder, parent-to-child links only — no sibling edges, so the graph stays navigable.</li>
-                <li>A push hook reviews each commit's diff against the docs and writes them back in sync.</li>
+                <li>The agents forget everything when a session ends, so their memory is a folder of notes they read at the start of the next one.</li>
+                <li>Each folder has one summary note, and notes only link down to the ones below them, so the map stays readable as it grows.</li>
+                <li>When code is pushed, a script compares it against the notes and updates them.</li>
               </ul>
               <p class="proj-note">Architecture and reusable patterns</p>
             </div>
