@@ -404,9 +404,11 @@
 
      Three-across was measured and rejected, not assumed. Four tracks plus
      three gaps inside the plate's real inner width (270px at 1280, 258px at
-     320) leaves about 68px a column, but the 12px labels measure 72.6px
-     ("Coordinator") and 79.2px ("Shared vault") — single unbreakable words
-     that would spill out of their own track at every width.
+     320) leaves about 68px a column, but the 12px labels measured 72.6px
+     ("Coordinator") and 79.2px ("Shared vault", the label at the time) —
+     words that would spill out of their own track at every width. The vault
+     label is longer now, so the case against three-across only got stronger;
+     it sits on its own full-width row instead, where it is free to wrap.
 
      The file on disk is 300x300 and is NEVER upscaled: it renders at the track
      total (260px at 1280, 255px at 390, 250px at 320) and is capped at 300px so
@@ -496,7 +498,7 @@
                 <span class="vault-link" aria-hidden="true"></span>
                 <img class="vault" src="assets/obsidian-graph-v4.png" width="300" height="300" loading="lazy" decoding="async"
                      alt="Knowledge-graph view of the shared Markdown vault: clustered notes linked parent to child.">
-                <span class="agent-name n3">Shared vault</span>
+                <span class="agent-name n3">Shared Context Vault</span>
               </div>
               <figcaption>Two AI coding agents, two models, one repository, one shared vault</figcaption>
             </figure>
@@ -644,9 +646,8 @@
             <div class="proj-text">
               <p>
                 iOS travel companion: it reverse-geocodes your exact spot and returns a sourced
-                debrief with walkable pins. Trusting generated output is the hard part —
-                every pin the model proposes is snapped onto a real POI coordinate or dropped,
-                enforced once on the backend and again in the app.
+                debrief with walkable pins. Every pin the model proposes is snapped onto a real
+                POI coordinate or dropped, enforced once on the backend and again in the app.
               </p>
               <ul class="proj-list">
                 <li>Pins are dropped, not approximated, when no real POI coordinate matches.</li>
